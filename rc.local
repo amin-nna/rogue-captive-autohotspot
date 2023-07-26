@@ -7,6 +7,7 @@ macchanger -A wlan0
 ifconfig wlan0 up
 sleep 1
 hostapd -B /etc/hostapd/hostapd.conf
+sh /rogue-captive-autohotspot/autohotspot.sh &
 sleep 2
 ifconfig br0 up
 ifconfig br0 10.1.1.1 netmask 255.255.255.0

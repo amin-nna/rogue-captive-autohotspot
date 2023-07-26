@@ -13,10 +13,9 @@ echo "Configuring components..."
 cp -f hostapd.conf /etc/hostapd/
 cp -f dnsmasq.conf /etc/
 
-
 # Step 2: Configure hostapd
 echo "Step 2: Configuring hostapd"
-sudo tee /etc/hostapd/hostapd.conf > /dev/null <<EOL
+cat > /etc/hostapd/hostapd.conf <<EOL
 # 2.4GHz setup wifi 80211 b,g,n
 interface=wlan0
 driver=nl80211
@@ -39,11 +38,11 @@ EOL
 
 # Update the defaults file
 echo "Updating /etc/default/hostapd"
-sudo sed -i 's/#DAEMON_CONF=""/DAEMON_CONF="\/etc\/hostapd\/hostapd.conf"/' /etc/default/hostapd
+sed -i 's/#DAEMON_CONF=""/DAEMON_CONF="\/etc\/hostapd\/hostapd.conf"/' /etc/default/hostapd
 
 # Step 3: Configure dnsmasq
 echo "Step 3: Configuring dnsmasq"
-sudo tee /etc/dnsmasq.conf > /dev/null <<EOL
+cat > /etc/dnsmasq.conf <<EOL
 # AutoHotspot config
 interface=wlan0
 bind-dynamic
@@ -55,15 +54,15 @@ EOL
 
 # Step 4: Set up ip forwarding
 echo "Step 4: Setting up IP forwarding"
-sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
 
 # Step 5: Disable wifi network in dhcpcd
 echo "Step 5: Disabling wifi network in dhcpcd"
-echo "nohook wpa_supplicant" | sudo tee -a /etc/dhcpcd.conf
+echo "nohook wpa_supplicant" >> /etc/dhcpcd.conf
 
 # Step 6: Create the autohotspot service file
 echo "Step 6: Creating autohotspot service file"
-sudo tee /etc/systemd/system/autohotspot.service > /dev/null <<EOL
+cat > /etc/systemd/system/autohotspot.service <<EOL
 [Unit]
 Description=Automatically generates an internet Hotspot when a valid SSID is not in range
 After=multi-user.target
@@ -71,26 +70,19 @@ After=multi-user.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/bin/autohotspotN
+ExecStart=/root/autohotspot.sh
 
 [Install]
 WantedBy=multi-user.target
 EOL
 
-# Step 7: Create the autohotspot script
-echo "Step 7: Creating autohotspot script"
-sudo tee /usr/bin/autohotspotN > /dev/null <<EOL
-# The content of the autohotspot script goes here (Copy the script provided in the instructions)
-EOL
+# Step 7: Make the autohotspot script executable
+echo "Step 7: Making the autohotspot script executable"
+chmod +x /root/autohotspot.sh
 
-# Step 8: Make the autohotspot script executable
-echo "Step 8: Making the autohotspot script executable"
-sudo chmod +x /usr/bin/autohotspotN
-
-# Step 9: Enable the autohotspot service
-echo "Step 9: Enabling the autohotspot service"
-sudo systemctl enable autohotspot.service
-
+# Step 8: Enable the autohotspot service
+echo "Step 8: Enabling the autohotspot service"
+systemctl enable autohotspot.service
 
 cp -rf html /var/www/
 chown -R www-data:www-data /var/www/html
@@ -99,9 +91,6 @@ cp -f rc.local /etc/
 cp -f override.conf /etc/apache2/conf-available/
 a2enconf override
 a2enmod rewrite
-
-
-
 
 echo "Installation completed successfully!"
 echo "Please reboot your Raspberry Pi to start using the hotspot."
