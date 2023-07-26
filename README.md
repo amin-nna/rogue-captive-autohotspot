@@ -6,13 +6,14 @@ It was designed to demonstrate the simplicity of offline credential grabbing and
 
 Installation after a fresh install of Raspbian Buster Lite:
 ```
-sudo apt update
-sudo apt install git
-git clone https://github.com/braindead-sec/rogue-captive
-cd rogue-captive
+sudo apt update && sudo apt upgrade
+sudo apt install git 
+git clone https://github.com/amin-nna/rogue-captive-autohotspot
+cd rogue-captive-autohotspot
 chmod +x install.sh
 sudo ./install.sh
 sudo reboot
+
 ```
 During installation, macchanger will ask whether or not MAC addresses should be changed automatically - choose "No". The startup script in rc.local will perform this task more reliably.
 
