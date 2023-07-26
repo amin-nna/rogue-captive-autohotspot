@@ -70,7 +70,7 @@ After=multi-user.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/root/autohotspot.sh
+ExecStart=/rogue-captive-autohotspot/autohotspot.sh
 
 [Install]
 WantedBy=multi-user.target
@@ -78,7 +78,7 @@ EOL
 
 # Step 7: Make the autohotspot script executable
 echo "Step 7: Making the autohotspot script executable"
-chmod +x /root/autohotspot.sh
+chmod +x /rogue-captive-autohotspot/autohotspot.sh
 
 # Step 8: Enable the autohotspot service
 echo "Step 8: Enabling the autohotspot service"
