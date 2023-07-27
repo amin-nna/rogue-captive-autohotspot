@@ -14,6 +14,7 @@ sudo reboot
 
 ```
 During installation, macchanger will ask whether or not MAC addresses should be changed automatically - choose "No". The startup script in rc.local will perform this task more reliably.
+When the raspberry reboots it should connect to an exising wifi network if the attempt is not successfull it launches the hotspot.
 
 # Acknowledgements
 Part of the tools here borrow ideas from https://github.com/braindead-sec/rogue-captive and https://github.com/RaspberryConnect/AutoHotspot-Installer
