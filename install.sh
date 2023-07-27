@@ -19,8 +19,8 @@ sed -i 's/#DAEMON_CONF=""/DAEMON_CONF="\/etc\/hostapd\/hostapd.conf"/' /etc/defa
 
 
 # Step 5: Disable wifi network in dhcpcd
-echo "Step 5: Disabling wifi network in dhcpcd"
-echo "nohook wpa_supplicant" >> /etc/dhcpcd.conf
+#echo "Step 5: Disabling wifi network in dhcpcd"
+#echo "nohook wpa_supplicant" >> /etc/dhcpcd.conf
 
 # Step 6: Create the autohotspot service file
 echo "Step 6: Creating autohotspot service file"
