@@ -167,7 +167,7 @@ if (!empty($_POST)) {
 
     <div class="main">
         <p class="sign" align="center">Raspberry Pi's Portal</p>
-        <img class="logo" align="center" src="logo-opndeved.png" alt="sglogo">
+        <img class="logo" align="center" src="logo-opendeved.png" >
 
         <form class="form1" action="index.php" method="post">
         <h2>Existing Networks</h2>
@@ -178,8 +178,10 @@ if (!empty($_POST)) {
             }
             ?>
         </ul>
+        <form class="form0">
         <input type="text" name="existing_network" placeholder="Enter existing network name">
-        <button type="submit" name="join_existing">Join Existing Network</button>
+        <a class="submit" align="center">Join</a>
+        </form>
 
         <h2>Join New Network</h2>
         
