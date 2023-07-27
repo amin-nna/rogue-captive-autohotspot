@@ -15,3 +15,5 @@ sudo reboot
 ```
 During installation, macchanger will ask whether or not MAC addresses should be changed automatically - choose "No". The startup script in rc.local will perform this task more reliably.
 
+# Acknowledgements
+Part of the tools here borrow ideas from https://github.com/braindead-sec/rogue-captive and https://github.com/RaspberryConnect/AutoHotspot-Installer
