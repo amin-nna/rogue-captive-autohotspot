@@ -11,7 +11,6 @@ if (!empty($_POST)) {
     if (isset($_POST['join_existing'])) {
         $existing_network = $_POST['existing_network'];
         if (array_key_exists($existing_network, $networks)) {
-            // Secure way to execute the command using escapeshellarg()
             $networkPassword = escapeshellarg($networks[$existing_network]);
             $command = 'nmcli dev wifi connect ' . escapeshellarg($existing_network) . ' password ' . $networkPassword;
             shell_exec($command);
@@ -21,15 +20,37 @@ if (!empty($_POST)) {
         }
     }
     if (isset($_POST['join_new'])) {
-        $network = $_POST['networkname'];
-        $pass = $_POST['password'];
-        // Sanitize user input before adding to the $networks array
-        $networks[htmlspecialchars($network)] = htmlspecialchars($pass);
-        // Secure way to execute the command using escapeshellarg()
-        $command = 'nmcli dev wifi connect ' . escapeshellarg($network) . ' password ' . escapeshellarg($pass);
-        shell_exec($command);
-        $err = "Created and joined new network: " . htmlspecialchars($network);
-    }
+    $network = $_POST['networkname'];
+    $pass = $_POST['password'];
+    // Sanitize user input
+    $sanitizedNetwork = htmlspecialchars($network);
+    $sanitizedPass = htmlspecialchars($pass);
+
+    // Add to the $networks array
+    $networks[$sanitizedNetwork] = $sanitizedPass;
+
+    // Create wpa_supplicant.conf content
+    $content = "
+    network={
+        ssid=\"{$sanitizedNetwork}\"
+        psk=\"{$sanitizedPass}\"
+        key_mgmt=WPA-PSK
+    }";
+
+    // Write to file
+    $file = '/etc/wpa_supplicant/wpa_supplicant.conf';
+    file_put_contents($file, $content);
+
+    // Restart network interface
+    exec('sudo systemctl restart wpa_supplicant');
+
+    // Secure way to execute the connection command
+    $command = 'nmcli dev wifi connect ' . escapeshellarg($sanitizedNetwork) . ' password ' . escapeshellarg($sanitizedPass);
+    shell_exec($command);
+
+    $err = "Created and joined new network: " . $sanitizedNetwork;
+}
+
 }
 ?>
 
@@ -166,33 +187,30 @@ if (!empty($_POST)) {
     <body>
 
     <div class="main">
-        <p class="sign" align="center">Raspberry Pi's Portal</p>
-        <img class="logo" align="center" src="logo-opendeved.png" >
-
-        <form class="form1" action="index.php" method="post">
-        <h2>Existing Networks</h2>
-        <ul>
-            <?php
-            foreach ($networks as $network => $password) {
-                echo "<li>" . htmlspecialchars($network) . "</li>";
-            }
-            ?>
-        </ul>
-        <form class="form0">
-        <input type="text" name="existing_network" placeholder="Enter existing network name">
-        <a class="submit" align="center">Join</a>
-        </form>
+         <p class="sign" align="center">Raspberry Pi's Portal</p>
+            <!-- ... -->
+            <?php if ($err != "") echo "<p class='error'>$err</p>"; ?> <!-- Displaying error messages -->
+            <form class="form1" action="index.php" method="post">
+                <h2>Existing Networks</h2>
+                <ul>
+                    <?php
+                    foreach ($networks as $network => $password) {
+                        echo "<li>" . htmlspecialchars($network) . "</li>";
+                    }
+                    ?>
+                </ul>
+                <input type="text" name="existing_network" placeholder="Enter existing network name">
+                <input class="submit" type="submit" name="join_existing" align="center" value="Join"> <!-- Fixed join existing network form -->
+            </form>
 
         <h2>Join New Network</h2>
-        
-        
-        <p class="warning"><?php echo !empty($err) ? htmlspecialchars($err) : "&nbsp;"; ?></p>
-    </form>
-    <form class="form1">
-        <input class="un " type="text" align="center" placeholder="Username">
-        <input class="pass" type="password" align="center" placeholder="Password">
-        <a class="submit" align="center">Join</a>
-    </form>
+<form class="form1" action="index.php" method="post">
+    <input class="un " type="text" align="center" name="networkname" placeholder="Network Name">
+    <input class="pass" type="password" align="center" name="password" placeholder="Password">
+    <input class="submit" type="submit" name="join_new" align="center" value="Join">
+</form>
+
+
 
     <script>
         // Corrected the script to set focus on the input element with the name "existing_network"
