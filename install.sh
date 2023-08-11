@@ -15,7 +15,8 @@ tar -xvf node-v10.24.1-linux-armv6l.tar.gz
 cd node-v10.24.1-linux-armv6l
 sudo cp -R * /usr/local/
 
-
+# Return to the home directory
+cd ~
 
 echo "Configuring components..."
 cp -f hostapd.conf /etc/hostapd/
