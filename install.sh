@@ -10,8 +10,9 @@ apt update
 apt -y install macchanger hostapd dnsmasq
 
 echo "Installing Node.js..."
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install -y nodejs
+
 
 echo "Configuring components..."
 cp -f hostapd.conf /etc/hostapd/
