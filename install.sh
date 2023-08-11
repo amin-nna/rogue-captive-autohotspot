@@ -16,7 +16,7 @@ cd node-v10.24.1-linux-armv6l
 sudo cp -R * /usr/local/
 
 # Return to the home directory
-cd ~
+cd ~/rogue-captive-autohotspot
 
 echo "Configuring components..."
 cp -f hostapd.conf /etc/hostapd/
