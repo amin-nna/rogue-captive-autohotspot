@@ -10,13 +10,8 @@ apt update
 apt -y install macchanger hostapd dnsmasq
 
 echo "Installing Node.js..."
-wget https://nodejs.org/dist/v10.24.1/node-v10.24.1-linux-armv6l.tar.gz
-tar -xvf node-v10.24.1-linux-armv6l.tar.gz
-cd node-v10.24.1-linux-armv6l
-sudo cp -R * /usr/local/
-
-# Return to the home directory
-cd ~/rogue-captive-autohotspot
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt-get install -y nodejs
 
 echo "Configuring components..."
 cp -f hostapd.conf /etc/hostapd/
