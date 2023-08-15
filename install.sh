@@ -29,6 +29,7 @@ sed -i 's/#DAEMON_CONF=""/DAEMON_CONF="\/etc\/hostapd\/hostapd.conf"/' /etc/defa
 #echo "nohook wpa_supplicant" >> /etc/dhcpcd.conf
 
 # Step 6: Creating autohotspot service file
+echo "Step 6: Creating autohotspot service file"
 cat > /etc/systemd/system/autohotspot.service <<EOL
 [Unit]
 Description=Automatically generates an internet Hotspot when a valid SSID is not in range
