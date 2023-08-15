@@ -44,6 +44,7 @@ WantedBy=multi-user.target
 EOL
 
 # Step 7: Making the server.js script
+echo "Step 7: Making the server.js script"
 if [ ! -d "/var/www/html/" ]; then
   mkdir -p /var/www/html/
 fi
