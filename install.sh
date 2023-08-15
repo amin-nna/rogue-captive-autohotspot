@@ -28,7 +28,7 @@ sed -i 's/#DAEMON_CONF=""/DAEMON_CONF="\/etc\/hostapd\/hostapd.conf"/' /etc/defa
 #echo "Step 5: Disabling wifi network in dhcpcd"
 #echo "nohook wpa_supplicant" >> /etc/dhcpcd.conf
 
-# Step 6: Creating autohotspot service file
+# Step 6: Create the autohotspot service file
 echo "Step 6: Creating autohotspot service file"
 cat > /etc/systemd/system/autohotspot.service <<EOL
 [Unit]
@@ -44,11 +44,8 @@ ExecStart=/usr/bin/node /var/www/html/server.js
 WantedBy=multi-user.target
 EOL
 
-# Step 7: Making the server.js script
+# Step 7: Make the autohotspot script executable
 echo "Step 7: Making the server.js script"
-if [ ! -d "/var/www/html/" ]; then
-  mkdir -p /var/www/html/
-fi
 cat > /var/www/html/server.js <<EOL
 var http = require('http');
 var fs = require('fs');
@@ -61,7 +58,6 @@ http.createServer(function (req, res) {
   });
 }).listen(8080);
 EOL
-
 
 echo "Making the server script executable"
 chmod +x /var/www/html/server.js
