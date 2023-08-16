@@ -6,8 +6,8 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 echo "Installing dependencies..."
-apt update
-apt -y install macchanger hostapd dnsmasq
+sudo apt update
+sudo apt -y install macchanger hostapd dnsmasq
 
 echo "Installing Node.js..."
 wget https://nodejs.org/dist/latest-v10.x/node-v10.24.1-linux-armv6l.tar.xz
