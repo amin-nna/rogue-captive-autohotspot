@@ -24,6 +24,14 @@ cat > /etc/systemd/system/autohotspot.service <<EOL
 Description=Automatically generates an internet Hotspot when a valid SSID is not in range
 After=multi-user.target
 
+[Service]
+ExecStart=/bin/bash autohotspot.sh
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
 # Step 8: Enable the autohotspot service
 echo "Step 8: Enabling the autohotspot service"
 systemctl enable autohotspot.service
@@ -32,4 +40,5 @@ echo "Installation completed successfully!"
 echo "Please reboot your Raspberry Pi to start using the hotspot."
 
 exit 0
+
 
