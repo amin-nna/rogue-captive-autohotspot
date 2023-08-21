@@ -1,24 +1,18 @@
 #!/bin/bash
-
 # Start the lighttpd server
 service lighttpd start
 sleep 1
-
 # Set up the network interfaces
 ifconfig wlan0 down
 macchanger -A wlan0
 ifconfig wlan0 up
 sleep 1
-
-# Start the hotspot
-hostapd -B /etc/hostapd/hostapd.conf
-sh /path/to/autohotspot.sh &
+# Attempt to connect to a WiFi or start hotspot
+sh autohotspot.sh &
 sleep 2
-
 # Set up the bridge network interface
 ifconfig br0 up
 ifconfig br0 10.1.1.1 netmask 255.255.255.0
-
 # Set up IP forwarding
 sysctl net.ipv4.ip_forward=1
 iptables --flush
@@ -27,7 +21,7 @@ iptables -t nat -A PREROUTING -i br0 -p udp -m udp --dport 53 -j DNAT --to-desti
 iptables -t nat -A PREROUTING -i br0 -p tcp -m tcp --dport 80 -j DNAT --to-destination 10.1.1.1:80
 iptables -t nat -A PREROUTING -i br0 -p tcp -m tcp --dport 443 -j DNAT --to-destination 10.1.1.1:80
 iptables -t nat -A POSTROUTING -j MASQUERADE
-
 # Start dnsmasq
 service dnsmasq start
 exit 0
+
