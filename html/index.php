@@ -1,226 +1,108 @@
-<?php
-$err = "";
-$networks = [
-    'Share4.0' => 'password1',
-    'Hotel_Guest' => 'password2',
-    'CloudNet' => 'password3',
-    // More networks can be added here
-];
-
-if (!empty($_POST)) {
-    if (isset($_POST['join_existing'])) {
-        $existing_network = $_POST['existing_network'];
-        if (array_key_exists($existing_network, $networks)) {
-            $networkPassword = escapeshellarg($networks[$existing_network]);
-            $command = 'nmcli dev wifi connect ' . escapeshellarg($existing_network) . ' password ' . $networkPassword;
-            shell_exec($command);
-            $err = "Joined the existing network: " . htmlspecialchars($existing_network);
-        } else {
-            $err = "This network does not exist.";
-        }
-    }
-    if (isset($_POST['join_new'])) {
-    $network = $_POST['networkname'];
-    $pass = $_POST['password'];
-    // Sanitize user input
-    $sanitizedNetwork = htmlspecialchars($network);
-    $sanitizedPass = htmlspecialchars($pass);
-
-    // Add to the $networks array
-    $networks[$sanitizedNetwork] = $sanitizedPass;
-
-    // Create wpa_supplicant.conf content
-    $content = "
-    network={
-        ssid=\"{$sanitizedNetwork}\"
-        psk=\"{$sanitizedPass}\"
-        key_mgmt=WPA-PSK
-    }";
-
-    // Write to file
-    $file = '/etc/wpa_supplicant/wpa_supplicant.conf';
-    file_put_contents($file, $content);
-
-    // Restart network interface
-    exec('sudo systemctl restart wpa_supplicant');
-
-    // Secure way to execute the connection command
-    $command = 'nmcli dev wifi connect ' . escapeshellarg($sanitizedNetwork) . ' password ' . escapeshellarg($sanitizedPass);
-    shell_exec($command);
-
-    $err = "Created and joined new network: " . $sanitizedNetwork;
-}
-
-}
-?>
-
 <!DOCTYPE html>
 <html>
-    <head>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sign In - Stay Greenville</title>
-
+<head>
+    <title>Base Station Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
-        background-image: url(https://www.simplifi.io/wp-content/uploads/2021/01/StayGreenville_BG_web.jpg);
-        background-position: center;
-        font-family: 'Ubuntu', sans-serif;
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
         }
 
-        .main {
-        background-color: #FFFFFF;
-        width: 400px;
-        height: auto;
-        margin: 7em auto;
-        border-radius: 1.5em;
-        box-shadow: 0px 11px 35px 2px rgba(0, 0, 0, 0.14);
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .sign {
-        padding-top: 40px;
-        color: #5da854;
-        font-family: 'Ubuntu', sans-serif;
-        font-size: 22px;
+        .status-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
 
-        .title {
-        color: #5da854;
-        font-family: 'Ubuntu', sans-serif;
-        font-weight: bold;
-        font-size: 36px;
-        margin-top: 5px;
+        .status-item {
+            margin-bottom: 10px;
         }
 
-        .logo {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 60%;
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
         }
 
-        .un {
-        width: 76%;
-        color: rgb(38, 50, 56);
-        font-weight: 700;
-        font-size: 14px;
-        letter-spacing: 1px;
-        background: rgba(136, 126, 126, 0.04);
-        padding: 10px 20px;
-        border: none;
-        border-radius: 20px;
-        outline: none;
-        box-sizing: border-box;
-        border: 2px solid rgba(0, 0, 0, 0.02);
-        margin-bottom: 50px;
-        margin-left: 46px;
-        margin-bottom: 27px;
-        text-align: center;
-        font-family: 'Ubuntu', sans-serif;
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
 
-        form.form1 {
-        padding-top: 40px;
+        li {
+            margin-bottom: 10px;
         }
 
-        .pass {
-        width: 76%;
-        color: rgb(38, 50, 56);
-        font-weight: 700;
-        font-size: 14px;
-        letter-spacing: 1px;
-        background: rgba(136, 126, 126, 0.04);
-        padding: 10px 20px;
-        border: none;
-        border-radius: 20px;
-        outline: none;
-        box-sizing: border-box;
-        border: 2px solid rgba(0, 0, 0, 0.02);
-        margin-bottom: 50px;
-        margin-left: 46px;
-        text-align: center;
-        margin-bottom: 27px;
-        font-family: 'Ubuntu', sans-serif;
+        .action-button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
         }
 
-
-        .un:focus,
-        .pass:focus {
-        border: 2px solid rgba(0, 0, 0, 0.18) !important;
-
+        .action-button:hover {
+            background-color: #0056b3;
         }
 
-        .submit {
-        cursor: pointer;
-        border-radius: 5em;
-        color: #fff;
-        background-color: #5da854;
-        border: 0;
-        padding-left: 40px;
-        padding-right: 40px;
-        padding-bottom: 10px;
-        padding-top: 10px;
-        font-family: 'Ubuntu', sans-serif;
-        margin-left: 35%;
-        font-size: 14px;
-        box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.04);
+        .subtitle {
+            font-weight: bold;
+            margin-top: 20px;
         }
 
-        .forgot {
-        text-shadow: 0px 0px 3px rgba(117, 117, 117, 0.12);
-        color: #E1BEE7;
-        padding-top: 15px;
-        padding-bottom: 40px;
+        .info-item {
+            margin-bottom: 10px;
         }
 
-        a {
-        text-shadow: 0px 0px 3px rgba(117, 117, 117, 0.12);
-        color: #91989e;
-        text-decoration: none
+        .info-item span {
+            font-weight: bold;
         }
-
     </style>
-
-    </head>
-
-    <body>
-
-    <div class="main">
-         <p class="sign" align="center">Raspberry Pi's Portal</p>
-            <!-- ... -->
-            <?php if ($err != "") echo "<p class='error'>$err</p>"; ?> <!-- Displaying error messages -->
-            <form class="form1" action="index.php" method="post">
-                <h2>Existing Networks</h2>
-                <ul>
-                    <?php
-                    foreach ($networks as $network => $password) {
-                        echo "<li>" . htmlspecialchars($network) . "</li>";
-                    }
-                    ?>
-                </ul>
-                <input type="text" name="existing_network" placeholder="Enter existing network name">
-                <input class="submit" type="submit" name="join_existing" align="center" value="Join"> <!-- Fixed join existing network form -->
-            </form>
-
-        <h2>Join New Network</h2>
-<form class="form1" action="index.php" method="post">
-    <input class="un " type="text" align="center" name="networkname" placeholder="Network Name">
-    <input class="pass" type="password" align="center" name="password" placeholder="Password">
-    <input class="submit" type="submit" name="join_new" align="center" value="Join">
-</form>
-
-
-
-    <script>
-        // Corrected the script to set focus on the input element with the name "existing_network"
-        document.onload = function () {
-            document.getElementsByName("existing_network")[0].focus();
-        };
-    </script>
-
-
-
-    </body>
-
+</head>
+<body>
+<div class="container">
+    <h2>Base Station Management</h2>
+    <div class="status-info">
+        <div class="status-item">
+            <p class="info-item"><span>Base station id:</span> 005</p>
+            <p class="info-item"><span>Location:</span> Pwani Basic School</p>
+            <p class="info-item"><span>Current time:</span> 2023-07-25T22:12:00+01:00</p>
+            <p class="info-item"><span>Current mode:</span> Hotspot | Network</p>
+        </div>
+        <div class="status-item">
+            <p class="info-item"><span>IP address on LAN:</span> 192.168.1.52</p>
+            <p class="info-item"><span>Global IP address:</span> 131.111.92.59</p>
+            <p class="info-item"><span>Maintenance tunnel active:</span> Yes | No | Not available</p>
+            <p class="info-item"><span>Battery charge:</span> 43%</p>
+        </div>
+    </div>
+    <h2>Actions</h2>
+    <ul>
+        <li><a href="/home/ilce/logs" class="action-button">Access base station logs</a></li>
+        <form action="add_wifi.php" method="post">
+            <input type="text" name="ssid" placeholder="SSID">
+            <input type="password" name="password" placeholder="Password">
+            <input type="submit" value="Add WiFi">
+        </form>
+        <li><a href="#" class="action-button">Reboot the base station</a></li>
+        <li><a href="#" class="action-button">(Re)start maintenance tunnel</a></li>
+        <li><a href="#" class="action-button">Show status of connected sensors</a></li>
+        <li><a href="#" class="action-button">Change base station location</a></li>
+        <li><a href="#" class="action-button">Log an event</a></li>
+    </ul>
+</div>
+</body>
 </html>
