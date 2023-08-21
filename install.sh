@@ -34,7 +34,10 @@ EOL
 
 # Step 8: Enable the autohotspot service
 echo "Step 8: Enabling the autohotspot service"
-systemctl enable autohotspot.service
+sudosystemctl enable autohotspot.service
+sudo systemctl enable hostapd
+sudo systemctl enable dnsmasq
+sudo systemctl enable lighttpd
 
 echo "Installation completed successfully!"
 echo "Please reboot your Raspberry Pi to start using the hotspot."
