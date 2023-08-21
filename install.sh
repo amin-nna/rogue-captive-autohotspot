@@ -9,13 +9,6 @@ echo "Installing dependencies..."
 sudo apt update
 sudo apt -y install macchanger hostapd dnsmasq
 
-echo "Installing Node.js..."
-wget https://nodejs.org/dist/latest-v10.x/node-v10.24.1-linux-armv6l.tar.xz
-tar -xJf node-v10.24.1-linux-armv6l.tar.xz
-cd node-v10.24.1-linux-armv6l/
-sudo cp -R * /usr/local/
-cd ..
-
 echo "Configuring components..."
 cp -f hostapd.conf /etc/hostapd/
 cp -f dnsmasq.conf /etc/
